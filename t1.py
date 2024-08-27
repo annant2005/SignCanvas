@@ -9,18 +9,18 @@ import time
 
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
-classifier = Classifier("Models/keras_model.h5", "Models/labels.txt")
+classifier = Classifier("Models/keras_model.h5", "Models/labels.txt") # models by google teachable machines need to be updated after full dataset 
 eng = pyttsx3.init()
 offset = 20
 imgSize = 300
 labels = ["hello", "correct", "no", "A", "B"]
 speak = ""
 prev_label = ""
-debounce_time = 1  # Minimum time between predictions in seconds
-last_prediction_time = time.time()  # Last time prediction was made
+debounce_time = 1  # ye wala time is the time between two succesive response jo bhi check karre is time ke sath changes karke dekh lena and check which time delay is okay and working smooth
+last_prediction_time = time.time()  
 
 while True:
-    # Capture frame
+  
     success, img = cap.read()
     if not success:
         break
@@ -38,7 +38,7 @@ while True:
             continue
         
       
-        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255
+        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255 
         aspectRatio = h / w
         if aspectRatio > 1:
             k = imgSize / h
@@ -70,7 +70,7 @@ while True:
         
   
         cv2.rectangle(imgOutput, (x - offset, y - offset - 50),
-                      (x - offset + 90, y - offset - 50 + 50), (255, 0, 255), cv2.FILLED)
+                      (x - offset + 90, y - offset - 50 + 50), (255, 0, 255), cv2.FILLED) # check for resize if needed to look great in all windows to show judges
         cv2.putText(imgOutput, prev_label, (x, y - 26), cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
         cv2.rectangle(imgOutput, (x - offset, y - offset),
                       (x + w + offset, y + h + offset), (255, 0, 255), 4)
