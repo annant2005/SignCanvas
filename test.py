@@ -3,14 +3,17 @@ from cvzone.HandTrackingModule import HandDetector
 from cvzone.ClassificationModule import Classifier
 import numpy as np
 import math
+import pyttsx3
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
-classifier = Classifier("Model/keras_model.h5", "Model/labels.txt")
+classifier = Classifier("Models/keras_model.h5", "Models/labels.txt")
+eng = pyttsx3.init()
 offset = 20
 imgSize = 300
 folder = "C:\\Users\\2005g\\OneDrive\\Documents\\python\\no"
 counter = 0
 labels = ["hello", "correct", "no", "A", "B"]
+speak = ""
 while True:
     success, img = cap.read()
     imgOutput = img.copy()
@@ -39,6 +42,12 @@ while True:
             hGap = math.ceil((imgSize - hCal) / 2)
             imgWhite[hGap:hCal + hGap, :] = imgResize
             prediction, index = classifier.getPrediction(imgWhite, draw=False)
+        label = labels[index]
+
+        if label != speak:
+            eng.say(label)
+            eng.runAndWait()
+            speak = label
         cv2.rectangle(imgOutput, (x - offset, y - offset-50),
                       (x - offset+90, y - offset-50+50), (255, 0, 255), cv2.FILLED)
         cv2.putText(imgOutput, labels[index], (x, y -26), cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
@@ -48,3 +57,9 @@ while True:
         cv2.imshow("ImageWhite", imgWhite)
     cv2.imshow("Image", imgOutput)
     cv2.waitKey(1)
+
+    if cv2.waitKeyEx(1) == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
